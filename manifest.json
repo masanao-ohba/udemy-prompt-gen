@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Udemy Q&A Copier",
+  "version": "1.0",
+  "description": "Udemyの問題・回答をフォーマット化してクリップボードにコピーする拡張",
+  "permissions": ["clipboardWrite", "scripting"],
+  "host_permissions": ["https://www.udemy.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.udemy.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
