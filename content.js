@@ -1,3 +1,18 @@
+// 状態定数
+const STATE_CORRECT = "CORRECT";            // 正解
+const STATE_CORRECT_PICKED = "CORRECT_PICKED"; // 正解かつ選択
+const STATE_WRONG = "WRONG";                // 誤答（選択肢のうち誤答判定されたもの）
+const STATE_UNSELECTED = "UNSELECTED";      // 未選択
+
+// Udemyの状態spanテキストからstate判定
+function detectState(labelText) {
+    if (!labelText) return STATE_UNSELECTED;
+    if (labelText.includes("正しい選択")) return STATE_CORRECT;
+    if (labelText.includes("選択は正解です")) return STATE_CORRECT_PICKED;
+    if (labelText.includes("選択は不正解です")) return STATE_WRONG;
+    return STATE_UNSELECTED;
+}
+
 function addCopyButtonIfNeeded() {
     // 「question-result--question-result--」で始まるdiv
     const questionResultDivs = Array.from(document.querySelectorAll('div[class^="question-result--question-result--"]'));
@@ -13,7 +28,7 @@ function addCopyButtonIfNeeded() {
 
         // ボタン作成
         const btn = document.createElement("button");
-        btn.textContent = "プロンプトをコピー";
+        btn.textContent = "クリップボードへコピー";
         btn.className = "ud-btn udemy-copy-btn";
         btn.style.marginLeft = "12px";
         btn.onclick = copyQAToClipboard;
@@ -36,13 +51,8 @@ async function copyQAToClipboard() {
         const answerDivs = Array.from(document.querySelectorAll('div[class^="result-pane--answer-result-pane--"]'));
         const answers = answerDivs.map(div => {
             const labelSpan = div.querySelector('span[data-purpose="answer-result-header-user-label"]');
-            let state = "未選択";
-            if (labelSpan) {
-                const txt = labelSpan.textContent.trim();
-                if (txt === "正解" || txt === "回答は正解です") state = "正解";
-                else if (txt === "回答は不正解です") state = "誤答";
-            }
-            // answerDivを渡す
+            const labelText = labelSpan ? labelSpan.textContent.trim() : "";
+            const state = detectState(labelText);
             return { state, answerDiv: div };
         });
 
@@ -59,20 +69,23 @@ async function copyQAToClipboard() {
     }
 }
 
+// フォーマット生成（複数回答/複数正解対応）
 async function generateFormattedOutput(prompt, answers) {
     let lines = [];
     lines.push("【問題文】");
     lines.push(prompt + "\n");
 
-    let pickedIdx = null;
-    let correctIdx = null;
+    let pickedIdxs = [];
+    let correctIdxs = [];
     let numberedAnswers = [];
 
     answers.forEach((a, idx) => {
-        if (a.state === "正解") correctIdx = idx;
-        if (a.state === "誤答") pickedIdx = idx;
+        // 正解（「正しい選択」 or 「選択は正解です」）
+        if (a.state === STATE_CORRECT || a.state === STATE_CORRECT_PICKED) correctIdxs.push(idx);
+        // 自分が選択したもの（「選択は正解です」or「選択は不正解です」）
+        if (a.state === STATE_CORRECT_PICKED || a.state === STATE_WRONG) pickedIdxs.push(idx);
 
-        // answerDivが未定義の場合は空文字
+        // 回答本文
         let answerText = "";
         if (a.answerDiv) {
             let clone = a.answerDiv.cloneNode(true);
@@ -82,32 +95,18 @@ async function generateFormattedOutput(prompt, answers) {
         numberedAnswers.push(answerText);
     });
 
-    if (pickedIdx === null && correctIdx !== null) pickedIdx = correctIdx;
-
     numberedAnswers.forEach((txt, idx) => {
         lines.push(`【回答${idx + 1}】\n${txt}\n`);
     });
 
     lines.push("---");
-    if (pickedIdx !== null && correctIdx !== null) {
-        lines.push(`私は回答${pickedIdx + 1}を選択し、正解は回答${correctIdx + 1}でした。`);
-    } else {
-        lines.push("選択/正解の取得に失敗しました。");
-    }
+    const pickedStr = pickedIdxs.length > 0 ? pickedIdxs.map(i => i + 1).join(",") : "未選択";
+    const correctStr = correctIdxs.length > 0 ? correctIdxs.map(i => i + 1).join(",") : "不明";
+    lines.push(`私は回答${pickedStr}を選択し、正解は回答${correctStr}でした。`);
     lines.push("初学者でも分かるように各回答の正誤に関しての根拠を説明してください。");
-    lines.push("今後似た問題を解く際に応用が聞くように根本的な理解をしたいです。");
+    lines.push("今後似た問題を解く際に応用が効くように根本的な理解をしたいです。");
     return lines.join("\n");
 }
 
-
-
-
-
-
-
-
-
-
 // ページ更新・Ajax再描画対策
 setInterval(addCopyButtonIfNeeded, 1000);
-
