@@ -7,9 +7,9 @@ const STATE_UNSELECTED = "UNSELECTED";
 // 状態判定ロジック（日本語パターン全部対応）
 function detectState(labelText) {
     if (!labelText) return STATE_UNSELECTED;
-    if (labelText.includes("正しい選択") || labelText.includes("正解")) return STATE_CORRECT;
     if (labelText.includes("回答は正解です") || labelText.includes("選択は正解です")) return STATE_CORRECT_PICKED;
     if (labelText.includes("回答は不正解です") || labelText.includes("選択は不正解です")) return STATE_WRONG;
+    if (labelText.includes("正しい選択") || labelText.includes("正解")) return STATE_CORRECT;
     return STATE_UNSELECTED;
 }
 
