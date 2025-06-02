@@ -85,8 +85,10 @@ async function generateFormattedOutput(prompt, answers) {
     const pickedStr = pickedIdxs.length > 0 ? pickedIdxs.map(i => i + 1).join(",") : "未選択";
     const correctStr = correctIdxs.length > 0 ? correctIdxs.map(i => i + 1).join(",") : "不明";
     lines.push(`私は回答${pickedStr}を選択し、正解は回答${correctStr}でした。`);
+    lines.push(``);
     lines.push("初学者でも分かるように各回答の正誤に関しての根拠を説明してください。");
-    lines.push("今後似た問題を解く際に応用が聞くように根本的な理解をしたいです。");
+    lines.push("回答ごとの説明する順番は「回答者の選択肢が不正解なら最初」「正解の選択肢は最後」に従ってください。");
+    lines.push("今後似た問題を解く際に応用が効くように根本的な理解をしたいです。");
     return lines.join("\n");
 }
 
