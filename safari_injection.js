@@ -20,10 +20,14 @@ function addCopyButtonIfNeeded() {
     if (!flexDiv) return;
     if (flexDiv.querySelector(".udemy-copy-btn")) return;
     const btn = document.createElement("button");
-    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/><circle cx="9.5" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>';
     btn.className = "udemy-copy-btn";
-    btn.title = "クリップボードへコピー";
-    btn.setAttribute("style", "margin-left:8px !important;padding:4px !important;cursor:pointer !important;background:none !important;border:1px solid #ccc !important;border-radius:3px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;color:#6a6f73 !important;min-width:auto !important;min-height:auto !important;width:auto !important;height:auto !important;align-self:center !important;line-height:1 !important;box-sizing:content-box !important;");
+    btn.title = "AIに質問するためコピー";
+    btn.setAttribute("style", "margin-left:8px !important;padding:5px 8px !important;cursor:pointer !important;background:#7c3aed !important;border:none !important;border-radius:6px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;color:#fff !important;min-width:auto !important;min-height:auto !important;width:auto !important;height:auto !important;align-self:center !important;line-height:1 !important;box-sizing:content-box !important;transition:background 0.15s,transform 0.1s !important;opacity:0.9 !important;");
+    btn.onmouseenter = function() { this.style.setProperty("background", "#6d28d9", "important"); this.style.setProperty("opacity", "1", "important"); };
+    btn.onmouseleave = function() { this.style.setProperty("background", "#7c3aed", "important"); this.style.setProperty("opacity", "0.9", "important"); };
+    btn.onmousedown = function() { this.style.setProperty("transform", "scale(0.93)", "important"); };
+    btn.onmouseup = function() { this.style.setProperty("transform", "scale(1)", "important"); };
     btn.onclick = copyQAToClipboard;
     flexDiv.appendChild(btn);
   });
@@ -50,9 +54,10 @@ async function copyQAToClipboard() {
     await navigator.clipboard.writeText(formatted);
     const btn = this;
     const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-    btn.style.setProperty("color", "#1e8e3e", "important");
-    setTimeout(() => { btn.innerHTML = originalHTML; btn.style.setProperty("color", "#6a6f73", "important"); }, 2000);
+    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+    btn.style.setProperty("background", "#16a34a", "important");
+    btn.style.setProperty("color", "#fff", "important");
+    setTimeout(() => { btn.innerHTML = originalHTML; btn.style.setProperty("background", "#7c3aed", "important"); btn.style.setProperty("color", "#fff", "important"); }, 2000);
   } catch (e) {
     console.error("コピーエラー:", e);
     alert("エラーが発生しました: " + (e.message || e));
