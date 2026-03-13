@@ -22,9 +22,10 @@ function addCopyButtonIfNeeded() {
         if (!flexDiv) return;
         if (flexDiv.querySelector(".udemy-copy-btn")) return;
         const btn = document.createElement("button");
-        btn.textContent = "クリップボードへコピー";
-        btn.className = "ud-btn udemy-copy-btn";
-        btn.style.marginLeft = "12px";
+        btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>';
+        btn.className = "udemy-copy-btn";
+        btn.title = "クリップボードへコピー";
+        btn.setAttribute("style", "margin-left:8px !important;padding:4px !important;cursor:pointer !important;background:none !important;border:1px solid #ccc !important;border-radius:3px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;color:#6a6f73 !important;min-width:auto !important;min-height:auto !important;width:auto !important;height:auto !important;align-self:center !important;line-height:1 !important;box-sizing:content-box !important;");
         btn.onclick = copyQAToClipboard;
         flexDiv.appendChild(btn);
     });
@@ -47,7 +48,11 @@ async function copyQAToClipboard() {
 
         const formatted = await generateFormattedOutput(prompt, answers);
         await navigator.clipboard.writeText(formatted);
-        alert("コピーしました！");
+        const btn = this;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+        btn.style.color = "#1e8e3e";
+        setTimeout(() => { btn.innerHTML = originalHTML; btn.style.color = "#6a6f73"; }, 2000);
     } catch (e) {
         alert("エラー: " + e.message);
     }
