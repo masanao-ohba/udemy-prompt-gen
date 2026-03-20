@@ -39,15 +39,11 @@ async function copyQAToClipboard() {
       alert("問題文が取得できません");
       return;
     }
-    const answerDivs = Array.from(document.querySelectorAll('div#answer-text'));
+    const answerDivs = Array.from(document.querySelectorAll('div[class^="result-pane--answer-result-pane--"]'));
     const answers = answerDivs.map(div => {
-      // 回答選択肢の文言
-      const answerLabel = div ? div.textContent.trim() : "";
-      // 正答状態要素 (親要素の兄弟要素から取得)
-      const resultLabelElement = div.parentElement.querySelector("span[data-purpose='answer-result-header-user-label']");
-      // 正答状態の文言
-      const resultLabel = resultLabelElement ? resultLabelElement.textContent.trim() : "";
-      const state = detectState(resultLabel);
+      const labelSpan = div.querySelector('span[data-purpose="answer-result-header-user-label"]');
+      const labelText = labelSpan ? labelSpan.textContent.trim() : "";
+      const state = detectState(labelText);
       return { state, answerDiv: div };
     });
     const formatted = await generateFormattedOutput(prompt, answers);
@@ -75,9 +71,7 @@ async function generateFormattedOutput(prompt, answers) {
     if (a.state === STATE_CORRECT_PICKED || a.state === STATE_WRONG) pickedIdxs.push(idx);
     let answerText = "";
     if (a.answerDiv) {
-      let clone = a.answerDiv.cloneNode(true);
-      clone.querySelectorAll('span[data-purpose="answer-result-header-user-label"]').forEach(e => e.remove());
-      answerText = clone.innerText.trim();
+      answerText = a.answerDiv.querySelector('[data-purpose="answer-body"]').innerText.trim();
     }
     numberedAnswers.push(answerText);
   });

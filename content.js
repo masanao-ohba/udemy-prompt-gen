@@ -80,9 +80,7 @@ async function generateFormattedOutput(prompt, answers) {
 
         let answerText = "";
         if (a.answerDiv) {
-            let clone = a.answerDiv.cloneNode(true);
-            clone.querySelectorAll('span[data-purpose="answer-result-header-user-label"]').forEach(e => e.remove());
-            answerText = clone.innerText.trim();
+            answerText = a.answerDiv.querySelector('[data-purpose="answer-body"]').innerText.trim();
         }
         numberedAnswers.push(answerText);
     });
